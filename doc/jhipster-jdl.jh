@@ -1,0 +1,205 @@
+// JDL definition for application 'SolidBridgeExc' generated with command 'jhipster export-jdl'
+
+entity Category (category) {
+  description String required,
+  sortOrder Integer,
+  dateAdded LocalDate,
+  dateModified LocalDate,
+  status CategoryStatus
+}
+entity Product (product) {
+  title String required,
+  keywords String,
+  description String,
+  rating Integer,
+  dateAdded LocalDate,
+  dateModified LocalDate
+}
+entity Customer (customer) {
+  name String,
+  site String,
+  email String,
+  telephone String
+}
+entity Address (address) {
+  address1 String,
+  address2 String,
+  city String,
+  postcode String required maxlength(10),
+  country String required maxlength(2)
+}
+entity Wallet (wallet) {
+  name String required,
+  password String required,
+  hdSeed String
+}
+entity Asset (asset) {
+  name String required,
+  accdiscr AssetDiscriminator required,
+  privateKey BigDecimal,
+  publicKey AnyBlob maxbytes(2048),
+  publicAddress String,
+  seed String,
+  balance BigDecimal,
+  cardNumber String,
+  expmonth String,
+  expyear String
+}
+entity BankAccount (bank_account) {
+  name String,
+  bankName String,
+  account String,
+  swift String,
+  bic String,
+  unp String,
+  balance BigDecimal
+}
+entity AssetStatus (asset_status) {
+  code String required maxlength(9),
+  name String required,
+  desc String required
+}
+entity AssetType (asset_type) {
+  code String required maxlength(9),
+  name String required,
+  desc String required
+}
+entity AssetAccount (asset_account) {
+  name String required,
+  desc String required,
+  date LocalDate,
+  sum BigDecimal
+}
+entity AssetAccountType (asset_account_type) {
+  code String required maxlength(9),
+  name String required,
+  desc String required
+}
+entity Operation (operation) {
+  name String,
+  date LocalDate,
+  amount BigDecimal
+}
+entity OperationType (operation_type) {
+  code String required maxlength(9),
+  name String required,
+  desc String required
+}
+entity Currency (currency) {
+  code String required maxlength(9),
+  name String required,
+  desc String required,
+  dimension Integer
+}
+entity CurrencyType (currency_type) {
+  code String required maxlength(9),
+  name String required,
+  desc String required
+}
+entity Transaction (transaction) {
+  name String required,
+  note String required,
+  amount BigDecimal required,
+  date LocalDate required
+}
+entity TransactionType (transaction_type) {
+  code String required maxlength(9),
+  name String required,
+  desc String required
+}
+entity TransactionStatus (transaction_status) {
+  code String required maxlength(9),
+  name String required,
+  desc String required
+}
+entity UserExtra (user_extra) {
+  phone String
+}
+entity UserType (user_type) {
+  code String required maxlength(9),
+  name String required,
+  desc String required
+}
+entity UserInfo (user_info) {
+  ip String,
+  info String,
+  accessDate LocalDate required,
+  device String required
+}
+entity CreditCard (credit_card) {
+  name String,
+  balance BigDecimal,
+  cardNumber String,
+  expmonth String,
+  expyear String
+}
+entity CryptoAsset (crypto_asset) {
+  name String,
+  privateKey BigDecimal,
+  publicKey AnyBlob maxbytes(2048),
+  publicAddress String,
+  seed String,
+  balance BigDecimal
+}
+
+enum CategoryStatus {
+  AVAILABLE,
+  RESTRICTED,
+  DISABLED
+}
+
+enum AssetDiscriminator {
+  CA,
+  CC,
+  BA
+}
+
+relationship OneToOne {
+  Asset{assetType(name) required} to AssetType,
+  Asset{assetStatus(name) required} to AssetStatus,
+  BankAccount{assetType(name) required} to AssetType,
+  BankAccount{assetStatus(name) required} to AssetStatus,
+  AssetAccount{assetAccountType(name) required} to AssetAccountType,
+  AssetAccount{currency(name)} to Currency,
+  Operation{operationType(name) required} to OperationType,
+  Currency{currencyType(name) required} to CurrencyType,
+  Transaction{source(name) required} to Asset,
+  Transaction{target(name) required} to Asset,
+  Transaction{transactionType(name) required} to TransactionType,
+  Transaction{transactionStatus(name) required} to TransactionStatus,
+  Transaction{source(name) required} to CryptoAsset,
+  Transaction{target(name) required} to CryptoAsset,
+  Transaction{source(name) required} to BankAccount,
+  Transaction{target(name) required} to BankAccount,
+  Transaction{source(name) required} to CreditCard,
+  Transaction{target(name) required} to CreditCard,
+  UserExtra{userType(name) required} to UserType,
+  CreditCard{assetType(name) required} to AssetType,
+  CreditCard{assetStatus(name) required} to AssetStatus,
+  CryptoAsset{assetType(name) required} to AssetType,
+  CryptoAsset{assetStatus(name) required} to AssetStatus
+}
+relationship OneToMany {
+  Customer{address} to Address{customer},
+  UserExtra{wallet} to Wallet{userExtra required},
+  Wallet{asset} to Asset{wallet required},
+  Wallet{asset} to BankAccount{wallet required},
+  Asset{assetAccount} to AssetAccount{asset(name) required},
+  Transaction{operation} to Operation{transaction required},
+  Currency{operation} to Operation{currency required},
+  AssetAccount{operation} to Operation{assetAccount(name) required},
+  UserExtra{userInfo} to UserInfo{userExtra required},
+  Wallet{asset} to CreditCard{wallet required},
+  Wallet{asset} to CryptoAsset{wallet required}
+}
+relationship ManyToOne {
+  Category{parent} to Category
+}
+relationship ManyToMany {
+  Category{product(title)} to Product{category}
+}
+
+paginate Category, Product, Customer, Asset, BankAccount, AssetAccount, Operation, Currency, Transaction, CreditCard, CryptoAsset with pagination
+service Category, Asset, AssetAccount, Operation, Transaction with serviceClass
+paginate Address with pager
+paginate Wallet, AssetStatus, AssetType, AssetAccountType, OperationType, CurrencyType, TransactionType, TransactionStatus, UserType with infinite-scroll
