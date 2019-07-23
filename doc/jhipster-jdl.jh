@@ -28,7 +28,7 @@ entity Address (address) {
   postcode String required maxlength(10),
   country String required maxlength(2)
 }
-entity Wallet (wallet) {
+entity Location (location) {
   name String required,
   password String required,
   hdSeed String
@@ -181,16 +181,16 @@ relationship OneToOne {
 }
 relationship OneToMany {
   Customer{address} to Address{customer},
-  UserExtra{wallet} to Wallet{userExtra required},
-  Wallet{asset} to Asset{wallet required},
-  Wallet{asset} to BankAccount{wallet required},
+  UserExtra{location} to Location{userExtra required},
+  Location{asset} to Asset{location required},
+  Location{asset} to BankAccount{location required},
   Asset{assetAccount} to AssetAccount{asset(name) required},
   Transaction{operation} to Operation{transaction required},
   Currency{operation} to Operation{currency required},
   AssetAccount{operation} to Operation{assetAccount(name) required},
   UserExtra{userInfo} to UserInfo{userExtra required},
-  Wallet{asset} to CreditCard{wallet required},
-  Wallet{asset} to CryptoAsset{wallet required}
+  Location{asset} to CreditCard{location required},
+  Location{asset} to CryptoAsset{location required}
 }
 relationship ManyToOne {
   Category{parent} to Category
@@ -202,4 +202,4 @@ relationship ManyToMany {
 paginate Category, Product, Customer, Asset, BankAccount, AssetAccount, Operation, Currency, Transaction, CreditCard, CryptoAsset with pagination
 service Category, Asset, AssetAccount, Operation, Transaction with serviceClass
 paginate Address with pager
-paginate Wallet, AssetStatus, AssetType, AssetAccountType, OperationType, CurrencyType, TransactionType, TransactionStatus, UserType with infinite-scroll
+paginate Location, AssetStatus, AssetType, AssetAccountType, OperationType, CurrencyType, TransactionType, TransactionStatus, UserType with infinite-scroll
